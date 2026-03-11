@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>0316*0713</title>
+  </head>
+  <body>
+
+    <!-- ===== Right Sidebar (fixed) ===== -->
+    <aside class="sidebar">
+      <button class="sidebar-btn sidebar-btn--list active" data-view="list" title="List view">
+        <svg width="50" height="50" viewBox="0 0 50 50" fill="none">
+          <rect x="8" y="13" width="34" height="5" rx="1.5" fill="#00BFFF"/>
+          <rect x="8" y="22.5" width="34" height="5" rx="1.5" fill="#00BFFF"/>
+          <rect x="8" y="32" width="34" height="5" rx="1.5" fill="#00BFFF"/>
+        </svg>
+      </button>
+      <button class="sidebar-btn sidebar-btn--grid" data-view="grid-1" title="Grid view">
+        <svg width="50" height="50" viewBox="0 0 50 50" fill="none">
+          <rect width="50" height="50" fill="#00BFFF"/>
+          <rect x="12.5" y="12.5" width="25" height="25" rx="2" fill="white"/>
+        </svg>
+      </button>
+      <button class="sidebar-btn sidebar-btn--info" title="Info">
+        <svg width="50" height="50" viewBox="0 0 50 50" fill="none">
+          <rect width="50" height="50" fill="#01A752"/>
+          <circle cx="25" cy="25" r="19" stroke="white" stroke-width="2" fill="#01A752"/>
+          <text x="25" y="35" text-anchor="middle" font-size="32" font-weight="500" font-family="'NeueMontreal', sans-serif" fill="white">i</text>
+        </svg>
+      </button>
+    </aside>
+
+    <!-- ===== Page Content ===== -->
+    <div class="page">
+
+      <!-- Header -->
+      <header class="header">
+
+        <!-- Zone 1 — Brand -->
+        <div class="header-zone zone-brand">
+          <div class="zone-line"></div>
+          <span class="brand-title">(0316*0713)<span class="brand-r">®</span></span>
+          <div class="brand-block">
+            <div class="brand-arrow">↓</div>
+          </div>
+          <span class="brand-sub">0316*0713 Archive<span class="brand-tm">TM</span></span>
+        </div>
+
+        <!-- Zone 2 — Search -->
+        <div class="header-zone zone-search">
+          <div class="zone-line"></div>
+          <label class="search-label" for="search-input">Search Archive:</label>
+          <input type="text" id="search-input" class="search-input" autocomplete="off" />
+        </div>
+
+        <!-- Zone 3 — Filter -->
+        <div class="header-zone zone-filter">
+          <div class="filter-bar"></div>
+          <div class="filter-row">
+            <span class="filter-current">Default</span>
+            <ul class="filter-list">
+              <li class="filter-option" data-filter="title">Title</li>
+              <li class="filter-option" data-filter="date-added">Date Added</li>
+              <li class="filter-option" data-filter="date-created">Date Created</li>
+              <li class="filter-option" data-filter="text">Text</li>
+              <li class="filter-option" data-filter="audio">Audio</li>
+              <li class="filter-option" data-filter="photo-video">Photo/Video</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Zone 4 — Last Modified -->
+        <div class="header-zone zone-modified">
+          <div class="zone-line"></div>
+          <span class="modified-line" id="last-modified-label">Last Modified: Wed, Mar 11-2026, <span id="last-modified-time-static">13:57:25</span></span>
+          <span class="modified-line" id="live-clock"></span>
+        </div>
+
+      </header>
+
+      <!-- Table -->
+      <main class="main">
+        <table class="archive-table">
+          <thead>
+            <tr>
+              <th class="col-num">#</th>
+              <th class="col-title">Title</th>
+              <th class="col-source">Source</th>
+              <th class="col-year">Year</th>
+              <th class="col-type">Type</th>
+            </tr>
+          </thead>
+          <tbody id="archive-body">
+            <tr class="archive-row" data-type="text">
+              <td class="col-num">01</td>
+              <td class="col-title">Intimacy without Proximity: Encountering Grizzlies as a Companion Species</td>
+              <td class="col-source">Jacob Metcalf</td>
+              <td class="col-year">2018</td>
+              <td class="col-type">Text</td>
+            </tr>
+            <tr class="archive-row" data-type="audio">
+              <td class="col-num">02</td>
+              <td class="col-title">Rodeo Clown</td>
+              <td class="col-source">Dijon</td>
+              <td class="col-year">2023</td>
+              <td class="col-type">Audio</td>
+            </tr>
+            <tr class="archive-row" data-type="text">
+              <td class="col-num">03</td>
+              <td class="col-title">Initiative for Indigenous Futures</td>
+              <td class="col-source">Aboriginal Territories in Cyberspace</td>
+              <td class="col-year">2017</td>
+              <td class="col-type">Text</td>
+            </tr>
+            <tr class="archive-row" data-type="text">
+              <td class="col-num">04</td>
+              <td class="col-title">SNAIL Magazine Issue 01: Revisiting Cyberfeminism</td>
+              <td class="col-source">Ada Karayel</td>
+              <td class="col-year">2020</td>
+              <td class="col-type">Text</td>
+            </tr>
+            <tr class="archive-row" data-type="text">
+              <td class="col-num">05</td>
+              <td class="col-title">Excerpt: Alone Together</td>
+              <td class="col-source">Sherry Turkle</td>
+              <td class="col-year">2012</td>
+              <td class="col-type">Text</td>
+            </tr>
+            <tr class="archive-row" data-type="text">
+              <td class="col-num">07</td>
+              <td class="col-title">Cruel Optimism</td>
+              <td class="col-source">Lauren Berlant</td>
+              <td class="col-year">1998</td>
+              <td class="col-type">Text</td>
+            </tr>
+            <tr class="archive-row" data-type="text">
+              <td class="col-num">08</td>
+              <td class="col-title">Intimacy without Proximity: Encountering Grizzlies as a Companion Species</td>
+              <td class="col-source">Jacob Metcalf</td>
+              <td class="col-year">2023</td>
+              <td class="col-type">Text</td>
+            </tr>
+            <tr class="archive-row" data-type="text">
+              <td class="col-num">09</td>
+              <td class="col-title">Intimacy without Proximity: Encountering Grizzlies as a Companion Species</td>
+              <td class="col-source">Jacob Metcalf</td>
+              <td class="col-year">2023</td>
+              <td class="col-type">Text</td>
+            </tr>
+            <tr class="archive-row" data-type="text">
+              <td class="col-num">10</td>
+              <td class="col-title">Intimacy without Proximity: Encountering Grizzlies as a Companion Species</td>
+              <td class="col-source">Jacob Metcalf</td>
+              <td class="col-year">2023</td>
+              <td class="col-type">Text</td>
+            </tr>
+            <tr class="archive-row" data-type="text">
+              <td class="col-num">11</td>
+              <td class="col-title">Intimacy without Proximity: Encountering Grizzlies as a Companion Species</td>
+              <td class="col-source">Jacob Metcalf</td>
+              <td class="col-year">2023</td>
+              <td class="col-type">Text</td>
+            </tr>
+            <tr class="archive-row" data-type="text">
+              <td class="col-num">12</td>
+              <td class="col-title">Intimacy without Proximity: Encountering Grizzlies as a Companion Species</td>
+              <td class="col-source">Jacob Metcalf</td>
+              <td class="col-year">2023</td>
+              <td class="col-type">Text</td>
+            </tr>
+            <tr class="archive-row" data-type="text">
+              <td class="col-num">13</td>
+              <td class="col-title">Intimacy without Proximity: Encountering Grizzlies as a Companion Species</td>
+              <td class="col-source">Jacob Metcalf</td>
+              <td class="col-year">2023</td>
+              <td class="col-type">Text</td>
+            </tr>
+            <tr class="archive-row" data-type="text">
+              <td class="col-num">14</td>
+              <td class="col-title">Intimacy without Proximity: Encountering Grizzlies as a Companion Species</td>
+              <td class="col-source">Jacob Metcalf</td>
+              <td class="col-year">2023</td>
+              <td class="col-type">Text</td>
+            </tr>
+            <tr class="archive-row" data-type="text">
+              <td class="col-num">15</td>
+              <td class="col-title">Intimacy without Proximity: Encountering Grizzlies as a Companion Species</td>
+              <td class="col-source">Jacob Metcalf</td>
+              <td class="col-year">2023</td>
+              <td class="col-type">Text</td>
+            </tr>
+            <tr class="archive-row" data-type="text">
+              <td class="col-num">16</td>
+              <td class="col-title">Intimacy without Proximity: Encountering Grizzlies as a Companion Species</td>
+              <td class="col-source">Jacob Metcalf</td>
+              <td class="col-year">2023</td>
+              <td class="col-type">Text</td>
+            </tr>
+            <tr class="archive-row" data-type="text">
+              <td class="col-num">17</td>
+              <td class="col-title">Intimacy without Proximity: Encountering Grizzlies as a Companion Species</td>
+              <td class="col-source">Jacob Metcalf</td>
+              <td class="col-year">2023</td>
+              <td class="col-type">Text</td>
+            </tr>
+            <tr class="archive-row" data-type="text">
+              <td class="col-num">18</td>
+              <td class="col-title">Intimacy without Proximity: Encountering Grizzlies as a Companion Species</td>
+              <td class="col-source">Jacob Metcalf</td>
+              <td class="col-year">2023</td>
+              <td class="col-type">Text</td>
+            </tr>
+            <tr class="archive-row" data-type="text">
+              <td class="col-num">19</td>
+              <td class="col-title">Intimacy without Proximity: Encountering Grizzlies as a Companion Species</td>
+              <td class="col-source">Jacob Metcalf</td>
+              <td class="col-year">2023</td>
+              <td class="col-type">Text</td>
+            </tr>
+            <tr class="archive-row" data-type="text">
+              <td class="col-num">20</td>
+              <td class="col-title">Intimacy without Proximity: Encountering Grizzlies as a Companion Species</td>
+              <td class="col-source">Jacob Metcalf</td>
+              <td class="col-year">2023</td>
+              <td class="col-type">Text</td>
+            </tr>
+            <tr class="archive-row" data-type="text">
+              <td class="col-num">21</td>
+              <td class="col-title">Intimacy without Proximity: Encountering Grizzlies as a Companion Species</td>
+              <td class="col-source">Jacob Metcalf</td>
+              <td class="col-year">2023</td>
+              <td class="col-type">Text</td>
+            </tr>
+            <tr class="archive-row" data-type="text">
+              <td class="col-num">22</td>
+              <td class="col-title">Intimacy without Proximity: Encountering Grizzlies as a Companion Species</td>
+              <td class="col-source">Jacob Metcalf</td>
+              <td class="col-year">2023</td>
+              <td class="col-type">Text</td>
+            </tr>
+            <tr class="archive-row" data-type="text">
+              <td class="col-num">23</td>
+              <td class="col-title">Intimacy without Proximity: Encountering Grizzlies as a Companion Species</td>
+              <td class="col-source">Jacob Metcalf</td>
+              <td class="col-year">2023</td>
+              <td class="col-type">Text</td>
+            </tr>
+            <tr class="archive-row" data-type="text">
+              <td class="col-num">24</td>
+              <td class="col-title">Intimacy without Proximity: Encountering Grizzlies as a Companion Species</td>
+              <td class="col-source">Jacob Metcalf</td>
+              <td class="col-year">2023</td>
+              <td class="col-type">Text</td>
+            </tr>
+            <tr class="archive-row" data-type="text">
+              <td class="col-num">25</td>
+              <td class="col-title">Intimacy without Proximity: Encountering Grizzlies as a Companion Species</td>
+              <td class="col-source">Jacob Metcalf</td>
+              <td class="col-year">2023</td>
+              <td class="col-type">Text</td>
+            </tr>
+            <tr class="archive-row" data-type="text">
+              <td class="col-num">26</td>
+              <td class="col-title">Intimacy without Proximity: Encountering Grizzlies as a Companion Species</td>
+              <td class="col-source">Jacob Metcalf</td>
+              <td class="col-year">2023</td>
+              <td class="col-type">Text</td>
+            </tr>
+          </tbody>
+        </table>
+      </main>
+
+    </div>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

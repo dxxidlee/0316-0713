@@ -1,0 +1,432 @@
+/* ===== @font-face — PP Neue Montreal ===== */
+
+@font-face {
+  font-family: 'NeueMontreal';
+  src: url('/fonts/PPNeueMontreal-Regular.otf') format('opentype');
+  font-weight: 400;
+}
+@font-face {
+  font-family: 'NeueMontreal';
+  src: url('/fonts/PPNeueMontreal-Medium.otf') format('opentype');
+  font-weight: 500;
+}
+@font-face {
+  font-family: 'NeueMontreal';
+  src: url('/fonts/PPNeueMontreal-Bold.otf') format('opentype');
+  font-weight: 700;
+}
+
+/* ===== CSS Variables ===== */
+
+:root {
+  --cyan: #00BFFF;
+  --black: #0a0a0a;
+  --white: #ffffff;
+  --gray-light: #f0f0f0;
+  --gray-mid: #cccccc;
+  --gray-text: #888888;
+  --green-info: #01A752;
+  --row-rule-color: #000000;
+  --row-rule-width: 1px;
+  --row-rule: var(--row-rule-width) solid var(--row-rule-color);
+  --sidebar-w: clamp(44px, 8vw, 70px);
+  --col-gap: clamp(10px, 1.8vw, 24px);
+
+  /* Responsive typography */
+  --fs-large: clamp(18px, 1.6vw, 25px);
+  --fs-small: clamp(11px, 0.9vw, 15px);
+  --fs-brand-sub: clamp(20px, 2vw, 30px);
+  --fs-brand-tm: clamp(13px, 1.3vw, 19.35px);
+}
+
+/* ===== Reset ===== */
+
+* {
+  font-family: 'NeueMontreal', sans-serif;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  width: 100%;
+  min-height: 100vh;
+  background-color: var(--white);
+  color: var(--black);
+  font-weight: 500;
+  font-size: 16px;
+  line-height: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+  padding: 0;
+}
+
+input, select {
+  font-family: inherit;
+  font-size: inherit;
+}
+
+ul {
+  list-style: none;
+}
+
+/* ===== Page Layout ===== */
+
+.page {
+  margin-right: var(--sidebar-w);
+  min-height: 100vh;
+}
+
+/* ===== Sidebar ===== */
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: var(--sidebar-w);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: clamp(8px, 2vw, 20px);
+  gap: clamp(4px, 1vw, 5px);
+  z-index: 100;
+  background: var(--white);
+}
+
+.sidebar-btn {
+  width: min(50px, calc(var(--sidebar-w) - 8px));
+  height: min(50px, calc(var(--sidebar-w) - 8px));
+  min-width: 36px;
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: opacity 0.15s;
+  overflow: hidden;
+}
+
+.sidebar-btn svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.sidebar-btn:hover {
+  opacity: 0.7;
+}
+
+/* ===== Header ===== */
+
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  padding: 20px 0 0 20px;
+  gap: 20px;
+}
+
+@media (max-width: 900px) {
+  .header {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px 24px;
+    max-width: 100%;
+  }
+  .header .zone-brand { width: 100%; max-width: 100%; }
+  .header .zone-search { max-width: 100%; }
+  .header .zone-filter { width: 100%; max-width: 100%; }
+  .header .zone-modified { margin-left: 0; }
+}
+
+.zone-line {
+  height: var(--row-rule-width);
+  background: var(--row-rule-color);
+  width: 100%;
+  margin-bottom: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.header-zone {
+  position: relative;
+}
+
+/* Zone 1 — Brand */
+.zone-brand {
+  width: 265px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.brand-title {
+  font-weight: 500;
+  font-size: var(--fs-large);
+  letter-spacing: -0.625px;
+  line-height: normal;
+  white-space: nowrap;
+  padding-top: 3px;
+}
+
+.brand-r {
+  font-weight: 700;
+  letter-spacing: -0.4px;
+}
+
+.brand-block {
+  width: 265px;
+  height: 49px;
+  background-color: var(--cyan);
+  margin-top: 5px;
+  position: relative;
+}
+
+.brand-arrow {
+  position: absolute;
+  left: 9px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--white);
+  font-size: calc(var(--fs-small) * 1.1);
+  line-height: 1;
+  font-weight: 600;
+}
+
+.brand-sub {
+  font-weight: 500;
+  font-size: var(--fs-brand-sub);
+  letter-spacing: -0.75px;
+  color: var(--cyan);
+  line-height: normal;
+  white-space: nowrap;
+  margin-top: 0;
+}
+
+.brand-tm {
+  font-size: var(--fs-brand-tm);
+  vertical-align: super;
+}
+
+/* Zone 2 — Search */
+.zone-search {
+  flex: 1;
+  max-width: 549px;
+  display: flex;
+  flex-direction: column;
+}
+
+.search-label {
+  font-weight: 500;
+  font-size: var(--fs-large);
+  letter-spacing: -0.625px;
+  line-height: normal;
+  white-space: nowrap;
+  color: var(--black);
+  padding-top: 3px;
+}
+
+.search-input {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1.5px solid var(--black);
+  border-radius: 0;
+  font-size: var(--fs-small);
+  font-weight: 500;
+  letter-spacing: -0.375px;
+  color: var(--black);
+  background: var(--white);
+  outline: none;
+  margin-top: 8px;
+  transition: border-color 0.15s;
+}
+
+.search-input:focus {
+  border-color: var(--cyan);
+}
+
+/* Zone 3 — Filter */
+.zone-filter {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.filter-bar {
+  width: 265px;
+  height: 15px;
+  background: var(--row-rule-color);
+}
+
+.filter-row {
+  display: flex;
+  gap: 50px;
+  margin-top: 0;
+}
+
+.filter-current {
+  font-size: var(--fs-small);
+  font-weight: 500;
+  letter-spacing: -0.375px;
+  color: var(--black);
+  white-space: nowrap;
+  cursor: default;
+  flex-shrink: 0;
+}
+
+.filter-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.filter-option {
+  font-size: var(--fs-small);
+  font-weight: 500;
+  letter-spacing: -0.375px;
+  color: var(--black);
+  cursor: pointer;
+  line-height: 1.2;
+  white-space: nowrap;
+  transition: color 0.15s;
+}
+
+.filter-option:hover {
+  color: var(--cyan);
+}
+
+.filter-option.active {
+  color: var(--cyan);
+}
+
+/* Zone 4 — Last Modified */
+.zone-modified {
+  margin-left: auto;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding-right: 20px;
+}
+
+.modified-line {
+  font-size: var(--fs-small);
+  font-weight: 500;
+  letter-spacing: -0.375px;
+  color: var(--black);
+  line-height: normal;
+  white-space: nowrap;
+}
+
+/* ===== Main / Table ===== */
+
+.main {
+  padding: 55px 20px 60px 20px;
+}
+
+.archive-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  padding-right: 0;
+}
+
+/* Equal gaps between columns and from Type to right bar (--col-gap) */
+.col-num {
+  min-width: 48px;
+  padding-left: 0;
+  padding-right: calc(var(--col-gap) / 2);
+}
+.col-title {
+  padding-left: calc(var(--col-gap) / 2);
+  padding-right: calc(var(--col-gap) / 2);
+}
+.col-source {
+  padding-left: calc(var(--col-gap) / 2);
+  padding-right: calc(var(--col-gap) / 2);
+}
+.col-year {
+  padding-left: calc(var(--col-gap) / 2);
+  padding-right: calc(var(--col-gap) / 2);
+}
+.col-type {
+  padding-left: calc(var(--col-gap) / 2);
+  padding-right: var(--col-gap);
+}
+
+/* Column widths: equal visual gaps, extra space for # so numbers don't clip */
+.col-num   { width: 5%; }
+.col-title { width: 38%; }
+.col-source { width: 28%; }
+.col-year  { width: 12%; }
+.col-type  { width: 17%; }
+
+.archive-table th,
+.archive-table td {
+  text-align: left;
+  vertical-align: top;
+  font-weight: 500;
+  white-space: normal;
+  overflow: visible;
+  word-wrap: break-word;
+}
+
+/* Table headers */
+.archive-table thead th {
+  font-size: var(--fs-small);
+  letter-spacing: -0.375px;
+  color: var(--black);
+  border-bottom: var(--row-rule);
+  padding-top: 0;
+  padding-bottom: 6px;
+  line-height: 1.25;
+}
+
+/* Table body cells — wrap to next line instead of ellipsis */
+.archive-table tbody td {
+  font-size: var(--fs-large);
+  letter-spacing: -0.625px;
+  color: var(--black);
+  line-height: 1.25;
+  min-height: 2.5em;
+  padding-top: 6px;
+  padding-bottom: 6px;
+}
+
+/* Rows */
+.archive-row {
+  border-bottom: var(--row-rule);
+  cursor: pointer;
+}
+
+/* Active / expanded row */
+.archive-row.active .col-title,
+.archive-row.active .col-source,
+.archive-row.active .col-year,
+.archive-row.active .col-type {
+  color: var(--cyan);
+}
+
+.archive-row.active .col-num::after {
+  content: '↓';
+  display: block;
+  font-size: 12px;
+  color: var(--cyan);
+  line-height: 1;
+  margin-top: 2px;
+}
