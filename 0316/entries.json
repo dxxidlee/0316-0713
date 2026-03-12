@@ -30,15 +30,15 @@
   {
     "id": 3,
     "type": "video",
-    "title": "Video Title",
-    "source": "Source",
-    "year": "2024",
+    "title": "Nico's Red Truck (Live)",
+    "source": "Dijon",
+    "year": "2025",
     "dateAdded": "2026-03-11",
     "dateCreated": null,
     "file": "/media/video/filename.mp4",
     "description": null,
     "url": null,
-    "caption": "Short caption about this video.",
+    "caption": "Dijon live at the Brooklyn Paramount (Mon, Dec 1-2025)",
     "thumbnail": null
   },
   {
