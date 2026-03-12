@@ -482,6 +482,7 @@ ul {
 .expand-row {
   border-bottom: var(--row-rule);
   cursor: pointer;
+  overflow: visible;
 }
 
 
@@ -501,6 +502,13 @@ ul {
 .expand-cell > *:first-child {
   transform: translateY(calc(-1 * var(--expand-pull, 57px)));
   margin-bottom: -36px;
+}
+
+/* Photo: no pull (avoids overlap/cut-off). Tighter gap between row text and image. */
+.expand-cell--photo > *:first-child {
+  transform: none;
+  margin-bottom: 0;
+  margin-top: -50px;
 }
 
 .expand-cell--text {
@@ -855,11 +863,12 @@ ul {
   opacity: 1;
 }
 
-/* Photo expand: side-by-side images, click to zoom */
+/* Photo expand: side-by-side images, click to zoom. Uses same pull as other expands for consistent gap. */
 .expand-cell--photo {
   padding: 0 0 0;
   padding-left: calc(5% + (var(--col-gap) / 2));
   vertical-align: top;
+  overflow: visible;
 }
 
 .expand-photo-wrap {
@@ -883,8 +892,14 @@ ul {
   cursor: pointer;
 }
 
+/* Single image: use full width so it isn't squeezed or cut off */
+.expand-photo-inner:has(.expand-photo-img-wrap:only-child) .expand-photo-img-wrap {
+  max-width: 100%;
+}
+
 .expand-photo-img {
   display: block;
+  max-width: 100%;
   max-height: min(38vh, 320px);
   width: auto;
   height: auto;
@@ -927,6 +942,56 @@ ul {
   max-width: 90vw;
   max-height: 90vh;
   cursor: default;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.photo-lightbox-content .photo-lightbox-img {
+  flex: 0 0 auto;
+}
+
+.photo-lightbox-slide-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.photo-lightbox-prev,
+.photo-lightbox-next {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--cyan);
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.photo-lightbox-prev:hover,
+.photo-lightbox-next:hover {
+  opacity: 0.8;
+}
+
+.photo-lightbox-prev svg,
+.photo-lightbox-next svg {
+  display: block;
+  width: 14px;
+  height: 14px;
+}
+
+.photo-lightbox-counter {
+  margin-top: 8px;
+  font-size: var(--fs-small);
+  font-weight: 500;
+  color: var(--black);
 }
 
 .photo-lightbox-img {

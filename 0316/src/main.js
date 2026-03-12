@@ -22,6 +22,8 @@ const ICON_PLAY = '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="
 const ICON_PAUSE = '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/></svg>'
 const ICON_SKIP_BACK = '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M6 6h2v12H6V6zm3.5 6l8.5 6V6l-8.5 6z"/></svg>'
 const ICON_SKIP_FORWARD = '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M6 6v12l8.5-6L6 6zM16 6h2v12h-2V6z"/></svg>'
+const ICON_TRIANGLE_LEFT = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M15 4l-8 8 8 8V4z"/></svg>'
+const ICON_TRIANGLE_RIGHT = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M9 4l8 8-8 8V4z"/></svg>'
 
 /**
  * Zero-pad row number for display (01, 02, ... 99, 100+)
@@ -165,6 +167,10 @@ function closePhotoLightbox() {
 
 function photoLightboxEscHandler(e) {
   if (e.key === 'Escape') closePhotoLightbox()
+  const overlay = document.getElementById('photo-lightbox')
+  if (!overlay || !overlay.dataset.slideshow) return
+  if (e.key === 'ArrowLeft') overlay.dispatchEvent(new CustomEvent('photo-lightbox-prev'))
+  if (e.key === 'ArrowRight') overlay.dispatchEvent(new CustomEvent('photo-lightbox-next'))
 }
 
 function closeVideoLightbox() {
@@ -301,7 +307,6 @@ function toggleAudioExpand(archiveRow) {
   expandRow.appendChild(expandCell)
   archiveRow.after(expandRow)
   archiveRow.classList.add('active')
-  applyExpandPull(expandRow)
   expandCell.addEventListener('click', (ev) => ev.stopPropagation())
 
   const audioEl = expandCell.querySelector('.expand-audio-el')
@@ -426,6 +431,7 @@ function toggleVideoExpand(archiveRow) {
   })
 
   const videoEl = expandCell.querySelector('.expand-video-el')
+  videoEl.muted = false
   const scrub = expandCell.querySelector('.expand-video-scrub')
   const currentSpan = expandCell.querySelector('.expand-video-current')
   const totalSpan = expandCell.querySelector('.expand-video-total')
@@ -550,7 +556,6 @@ function togglePhotoExpand(archiveRow) {
   expandRow.appendChild(expandCell)
   archiveRow.after(expandRow)
   archiveRow.classList.add('active')
-  applyExpandPull(expandRow)
   expandCell.addEventListener('click', (ev) => ev.stopPropagation())
 
   expandCell.querySelectorAll('.expand-photo-img').forEach((img) => {
@@ -564,7 +569,7 @@ function togglePhotoExpand(archiveRow) {
   })
 }
 
-/** Step 9 — Photo lightbox: full-screen overlay, blur, rounded image, cyan border, caption, ESC/click outside. */
+/** Step 9 — Photo lightbox: full-screen overlay, blur, rounded image, cyan border, caption, ESC/click outside. Multi-image = slideshow with prev/next. */
 function openPhotoLightbox(archiveRow, imageSrc) {
   if (!imageSrc) collapseAllExpanded()
 
@@ -572,16 +577,27 @@ function openPhotoLightbox(archiveRow, imageSrc) {
   const entry = allEntries.find(e => e.id === id)
   if (!entry || (entry.type || '').toLowerCase() !== 'photo') return
 
-  const file = imageSrc || (Array.isArray(entry.files) && entry.files.length > 0 ? entry.files[0] : entry.file) || ''
+  const files = Array.isArray(entry.files) && entry.files.length > 0
+    ? entry.files
+    : (entry.file ? [entry.file] : [])
+  const currentIndex = imageSrc ? Math.max(0, files.indexOf(imageSrc)) : 0
+  const file = files[currentIndex] || imageSrc || entry.file || ''
   const caption = entry.caption || ''
+  const isSlideshow = files.length > 1
 
   const overlay = document.createElement('div')
   overlay.id = 'photo-lightbox'
   overlay.className = 'photo-lightbox'
+  if (isSlideshow) overlay.dataset.slideshow = '1'
   overlay.innerHTML = `
     <div class="photo-lightbox-backdrop" aria-hidden="true"></div>
     <div class="photo-lightbox-content">
-      <img class="photo-lightbox-img" src="${escapeHtml(file)}" alt="${escapeHtml(entry.title || '')}" />
+      <div class="photo-lightbox-slide-wrap">
+        ${isSlideshow ? `<button type="button" class="photo-lightbox-prev" aria-label="Previous image">${ICON_TRIANGLE_LEFT}</button>` : ''}
+        <img class="photo-lightbox-img" src="${escapeHtml(file)}" alt="${escapeHtml(entry.title || '')}" />
+        ${isSlideshow ? `<button type="button" class="photo-lightbox-next" aria-label="Next image">${ICON_TRIANGLE_RIGHT}</button>` : ''}
+      </div>
+      ${isSlideshow ? `<span class="photo-lightbox-counter" aria-live="polite">${currentIndex + 1} / ${files.length}</span>` : ''}
       ${caption ? `<p class="photo-lightbox-caption">${escapeHtml(caption)}</p>` : ''}
     </div>
   `
@@ -589,6 +605,24 @@ function openPhotoLightbox(archiveRow, imageSrc) {
   overlay.querySelector('.photo-lightbox-backdrop').addEventListener('click', closePhotoLightbox)
   overlay.querySelector('.photo-lightbox-content').addEventListener('click', (e) => e.stopPropagation())
   overlay.querySelector('.photo-lightbox-img').addEventListener('click', (e) => e.stopPropagation())
+
+  if (isSlideshow) {
+    const imgEl = overlay.querySelector('.photo-lightbox-img')
+    const counterEl = overlay.querySelector('.photo-lightbox-counter')
+    let index = currentIndex
+
+    function go(delta) {
+      index = (index + delta + files.length) % files.length
+      imgEl.src = files[index]
+      imgEl.alt = `${entry.title || ''} ${index + 1}`
+      if (counterEl) counterEl.textContent = `${index + 1} / ${files.length}`
+    }
+
+    overlay.addEventListener('photo-lightbox-prev', () => go(-1))
+    overlay.addEventListener('photo-lightbox-next', () => go(1))
+    overlay.querySelector('.photo-lightbox-prev')?.addEventListener('click', (e) => { e.stopPropagation(); go(-1) })
+    overlay.querySelector('.photo-lightbox-next')?.addEventListener('click', (e) => { e.stopPropagation(); go(1) })
+  }
 
   document.body.appendChild(overlay)
   document.addEventListener('keydown', photoLightboxEscHandler)
@@ -633,6 +667,7 @@ function openVideoLightbox(archiveRow) {
   content.addEventListener('click', (e) => e.stopPropagation())
 
   const videoEl = overlay.querySelector('.video-lightbox-el')
+  videoEl.muted = false
   const lightboxInner = overlay.querySelector('.video-lightbox-inner')
   const scrub = overlay.querySelector('.expand-video-scrub')
   const currentSpan = overlay.querySelector('.expand-video-current')
