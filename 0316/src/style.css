@@ -1071,6 +1071,52 @@ ul {
   text-align: center;
 }
 
+/* ===== Info Overlay ===== */
+.info-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.info-overlay-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  cursor: pointer;
+}
+
+.info-overlay-content {
+  position: relative;
+  max-width: 600px;
+  padding: 48px 40px;
+  text-align: center;
+  cursor: default;
+}
+
+.info-overlay-text {
+  font-size: var(--fs-large);
+  font-weight: 500;
+  letter-spacing: -0.625px;
+  line-height: 1.5;
+  color: var(--black);
+  margin: 0 0 24px;
+}
+
+.info-overlay-text:last-child {
+  margin-bottom: 0;
+}
+
+.info-overlay-love {
+  color: var(--cyan);
+  font-style: italic;
+}
+
 /* ===== Mobile (max-width: 768px) ===== */
 @media (max-width: 768px) {
   /* Typography */

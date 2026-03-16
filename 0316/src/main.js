@@ -819,12 +819,52 @@ function startLiveClock() {
   setInterval(update, 1000)
 }
 
+/** Info overlay */
+function closeInfoOverlay() {
+  const el = document.getElementById('info-overlay')
+  if (el) el.remove()
+  document.removeEventListener('keydown', infoOverlayEscHandler)
+}
+
+function infoOverlayEscHandler(e) {
+  if (e.key === 'Escape') closeInfoOverlay()
+}
+
+function openInfoOverlay() {
+  if (document.getElementById('info-overlay')) { closeInfoOverlay(); return }
+
+  const overlay = document.createElement('div')
+  overlay.id = 'info-overlay'
+  overlay.className = 'info-overlay'
+  overlay.innerHTML = `
+    <div class="info-overlay-backdrop" aria-hidden="true"></div>
+    <div class="info-overlay-content">
+      <p class="info-overlay-text">0316*0713 is an archive for Nicole and myself. A birthday gift for Nicole's 21st birthday but also an archive that will grow and be edited through time and grow larger in size slowly.</p>
+      <p class="info-overlay-text">Upload and delete function will come soon with a mobile compatible version.</p>
+      <p class="info-overlay-text info-overlay-love">I love you and happy birthday Nicole.</p>
+    </div>
+  `
+
+  overlay.querySelector('.info-overlay-backdrop').addEventListener('click', closeInfoOverlay)
+  overlay.querySelector('.info-overlay-content').addEventListener('click', (e) => e.stopPropagation())
+
+  document.body.appendChild(overlay)
+  document.addEventListener('keydown', infoOverlayEscHandler)
+}
+
+function setupInfoButton() {
+  const btn = document.querySelector('.sidebar-btn--info')
+  if (btn) btn.addEventListener('click', openInfoOverlay)
+}
+
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', () => {
     loadAndRender()
     startLiveClock()
+    setupInfoButton()
   })
 } else {
   loadAndRender()
   startLiveClock()
+  setupInfoButton()
 }
