@@ -1078,21 +1078,28 @@ ul {
     font-size: 13px;
   }
 
-  /* Layout: sidebar becomes bottom bar */
+  /* Layout: sidebar becomes fixed bottom bar */
   .sidebar {
     position: fixed;
     inset: auto 0 0 0;
+    top: auto;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    width: 100%;
     height: auto;
     flex-direction: row;
-    justify-content: space-between;
+    justify-content: space-evenly;
     align-items: center;
     padding: 6px 16px;
     border-top: var(--row-rule);
+    z-index: 200;
   }
 
   .page {
+    margin-right: 0;
     padding-left: 0;
-    padding-bottom: calc(var(--sidebar-w) + 12px);
+    padding-bottom: 72px;
   }
 
   .sidebar-btn {
@@ -1102,7 +1109,7 @@ ul {
     min-height: 44px;
   }
 
-  /* Header: stacked */
+  /* Header: stacked, no extra gap */
   .header {
     padding: 12px 12px 0 12px;
     display: grid;
@@ -1111,29 +1118,41 @@ ul {
       "brand modified"
       "search search"
       "filter filter";
-    gap: 12px;
+    gap: 8px;
+    min-height: 0;
+    height: auto;
+  }
+
+  .header-zone {
+    min-height: 0;
+    height: auto;
   }
 
   .zone-brand {
     grid-area: brand;
     width: auto;
+    min-height: 0;
   }
 
   .zone-modified {
     grid-area: modified;
+    margin-left: 0;
     align-items: flex-end;
     padding-right: 0;
+    min-height: 0;
   }
 
   .zone-search {
     grid-area: search;
     max-width: 100%;
+    min-height: 0;
   }
 
   .zone-filter {
     grid-area: filter;
     width: 100%;
     max-width: 100%;
+    min-height: 0;
   }
 
   .filter-bar {
@@ -1145,11 +1164,33 @@ ul {
     justify-content: space-between;
   }
 
+  /* Filter dropdown styling */
+  .filter-list {
+    background: var(--white);
+    color: var(--black);
+    border: 1px solid #999;
+    width: 100%;
+  }
+
+  .filter-option {
+    background: var(--white);
+    color: var(--black);
+  }
+
   .search-input {
     width: 100%;
   }
 
-  /* Table: hide # and Type, only Title + Source */
+  /* Reduce gap between header and table */
+  .main {
+    padding: 20px 12px 40px 12px;
+  }
+
+  /* Table: hide # and Type, show Title + Source + Year */
+  .archive-table {
+    table-layout: fixed;
+  }
+
   .archive-table thead .col-num,
   .archive-table thead .col-type,
   .archive-table tbody .col-num,
@@ -1157,8 +1198,19 @@ ul {
     display: none;
   }
 
-  .col-title { width: 56%; }
-  .col-source { width: 44%; }
+  .archive-table thead .col-year,
+  .archive-table tbody .col-year {
+    display: table-cell;
+  }
+
+  .col-title { width: 50%; }
+  .col-source { width: 35%; }
+  .col-year { width: 15%; }
+
+  .archive-table th,
+  .archive-table td {
+    white-space: nowrap;
+  }
 
   .archive-table tbody td {
     padding-top: 10px;
@@ -1168,19 +1220,33 @@ ul {
 
   .archive-table tbody .col-title,
   .archive-table tbody .col-source {
-    white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
 
-  /* Expand rows */
+  .archive-table tbody .col-year {
+    white-space: nowrap;
+  }
+
+  /* Expand rows: normal flow, no overlap */
+  .expand-row {
+    position: relative;
+  }
+
   .expand-cell {
     padding-left: 12px;
     padding-right: 12px;
+    overflow: hidden;
+    position: relative;
   }
 
   .expand-cell--text {
     max-width: 100%;
+    position: relative;
+  }
+
+  .expand-description {
+    position: relative;
   }
 
   /* Audio expand: vertical stack */
@@ -1211,13 +1277,29 @@ ul {
     max-width: 100%;
   }
 
-  /* Video expand: full-width player and controls */
+  /* Video expand: full-width, no overflow */
+  .expand-cell--video {
+    overflow: hidden;
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
   .expand-video-wrap {
     max-width: 100%;
+    width: 100%;
+    overflow: hidden;
   }
 
   .expand-video-frame {
+    width: 100% !important;
+    max-width: 100%;
+    height: auto !important;
+    overflow: hidden;
+  }
+
+  .expand-video-el {
     width: 100%;
+    max-width: 100%;
     height: auto;
   }
 
