@@ -223,6 +223,10 @@ function getArchiveRowFromClick(target) {
 
 /** Measure archive row and first arrow; set --expand-pull so expand content top aligns with first arrow top. */
 function applyExpandPull(expandRow) {
+  // Mobile uses normal document flow for expanded rows.
+  // Desktop pull-up alignment causes overlap/clipping on small screens.
+  if (window.matchMedia('(max-width: 768px)').matches) return
+
   const archiveRow = expandRow.previousElementSibling
   if (!archiveRow || !archiveRow.classList.contains('archive-row')) return
   const firstArrow = archiveRow.querySelector('.col-num-arrow')

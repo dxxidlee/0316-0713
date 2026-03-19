@@ -207,7 +207,7 @@ ul {
   display: flex;
   flex-wrap: wrap;
   align-items: flex-start;
-  padding: 20px 0 0 20px;
+  padding: 20px 20px 0 20px;
   gap: 20px;
 }
 
@@ -223,7 +223,7 @@ ul {
     max-width: 100%;
   }
   .header .zone-brand { grid-area: brand; width: 100%; max-width: 100%; }
-  .header .zone-modified { grid-area: modified; margin-left: 0; justify-self: start; align-items: flex-start; }
+  .header .zone-modified { grid-area: modified; margin-left: 0; justify-self: stretch; width: 100%; align-items: flex-start; }
   .header .zone-search { grid-area: search; width: 100%; max-width: 100%; }
   .header .zone-filter { grid-area: filter; width: 265px; max-width: 265px; }
   .header .filter-bar,
@@ -1454,6 +1454,25 @@ ul {
     text-overflow: ellipsis;
   }
 
+  /* Mobile: show full title instead of truncating with ellipsis */
+  .archive-table tbody .col-title {
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    line-height: 1.2;
+  }
+
+  .archive-table tbody .col-source {
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    line-height: 1.2;
+  }
+
   .archive-table tbody .col-year {
     white-space: nowrap;
   }
@@ -1468,6 +1487,16 @@ ul {
     padding-right: 12px;
     overflow: hidden;
     position: relative;
+  }
+
+  /* Disable desktop pull-up transform on mobile to prevent overlap/jumping */
+  .expand-cell > *:first-child {
+    transform: none !important;
+    margin-bottom: 0 !important;
+  }
+
+  .expand-cell--photo > *:first-child {
+    margin-top: 0 !important;
   }
 
   .expand-cell--text {
