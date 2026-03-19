@@ -113,9 +113,14 @@ function updateFilterUI(filterValue) {
   const currentEl = document.querySelector('.filter-current')
   const options = document.querySelectorAll('.filter-option')
   if (currentEl) currentEl.textContent = FILTER_LABELS[filterValue] || 'Default'
+  const optionArray = Array.from(options)
+  const activeIndex = optionArray.findIndex(el => el.getAttribute('data-filter') === filterValue)
   options.forEach(el => {
     const value = el.getAttribute('data-filter')
-    el.classList.toggle('active', value === filterValue)
+    const index = optionArray.indexOf(el)
+    const isActive = value === filterValue
+    el.classList.toggle('active', isActive)
+    el.classList.toggle('covered', activeIndex >= 0 && index <= activeIndex)
   })
 }
 
@@ -830,6 +835,7 @@ function startLiveClock() {
 function closeInfoOverlay() {
   const el = document.getElementById('info-overlay')
   if (el) el.remove()
+  document.querySelector('.sidebar-btn--info')?.classList.remove('active')
   document.removeEventListener('keydown', infoOverlayEscHandler)
 }
 
@@ -839,6 +845,7 @@ function infoOverlayEscHandler(e) {
 
 function openInfoOverlay() {
   if (document.getElementById('info-overlay')) { closeInfoOverlay(); return }
+  document.querySelector('.sidebar-btn--info')?.classList.add('active')
 
   const overlay = document.createElement('div')
   overlay.id = 'info-overlay'
@@ -865,12 +872,12 @@ function setupInfoButton() {
 }
 
 function setupViewButtons() {
-  document.querySelectorAll('.sidebar-btn[data-view]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      if (expandedAllActive) closeExpandedAll()
-      document.querySelectorAll('.sidebar-btn[data-view]').forEach(b => b.classList.remove('active'))
-      btn.classList.add('active')
-    })
+  const listBtn = document.querySelector('.sidebar-btn--list')
+  if (!listBtn) return
+  listBtn.addEventListener('click', () => {
+    if (expandedAllActive) closeExpandedAll()
+    listBtn.classList.add('active')
+    document.querySelector('.sidebar-btn--grid')?.classList.remove('active')
   })
 }
 
@@ -1123,11 +1130,12 @@ function closeExpandedAll() {
   const mainEl = document.querySelector('.main')
   if (mainEl) mainEl.style.display = ''
   expandedAllActive = false
-  document.querySelector('.sidebar-btn--expanded-all')?.classList.remove('active')
+  document.querySelector('.sidebar-btn--grid')?.classList.remove('active')
+  document.querySelector('.sidebar-btn--list')?.classList.add('active')
 }
 
 function setupExpandedAllButton() {
-  const btn = document.querySelector('.sidebar-btn--expanded-all')
+  const btn = document.querySelector('.sidebar-btn--grid')
   if (!btn) return
   btn.addEventListener('click', () => {
     if (expandedAllActive) {
@@ -1135,7 +1143,6 @@ function setupExpandedAllButton() {
     } else {
       collapseAllExpanded()
       document.querySelector('.sidebar-btn--list')?.classList.remove('active')
-      document.querySelector('.sidebar-btn--grid')?.classList.remove('active')
       btn.classList.add('active')
       expandedAllActive = true
       renderExpandedAll()
@@ -1150,6 +1157,7 @@ let uploadUnlocked = false
 function closeUploadModal() {
   const el = document.getElementById('upload-modal')
   if (el) el.remove()
+  document.querySelector('.sidebar-btn--upload')?.classList.remove('active')
   document.removeEventListener('keydown', uploadEscHandler)
 }
 
@@ -1159,6 +1167,7 @@ function uploadEscHandler(e) {
 
 function openUploadModal() {
   if (document.getElementById('upload-modal')) { closeUploadModal(); return }
+  document.querySelector('.sidebar-btn--upload')?.classList.add('active')
 
   const modal = document.createElement('div')
   modal.id = 'upload-modal'
