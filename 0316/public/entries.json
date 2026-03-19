@@ -212,20 +212,6 @@
     "thumbnail": null
   },
   {
-    "id": 16,
-    "type": "text",
-    "title": "Entry Title",
-    "source": "Author or Origin",
-    "year": "2023",
-    "dateAdded": "2026-03-11",
-    "dateCreated": "2023-04-01",
-    "file": null,
-    "description": "Full text body or excerpt goes here. Can be long.",
-    "url": "https://optional-link.com",
-    "caption": null,
-    "thumbnail": null
-  },
-  {
     "id": 17,
     "type": "audio",
     "title": "The Dress",
@@ -282,20 +268,6 @@
     "thumbnail": null
   },
   {
-    "id": 21,
-    "type": "text",
-    "title": "Entry Title",
-    "source": "Author or Origin",
-    "year": "2023",
-    "dateAdded": "2026-03-11",
-    "dateCreated": "2023-04-01",
-    "file": null,
-    "description": "Full text body or excerpt goes here. Can be long.",
-    "url": "https://optional-link.com",
-    "caption": null,
-    "thumbnail": null
-  },
-  {
     "id": 22,
     "type": "text",
     "title": "The Second Sex",
@@ -306,34 +278,6 @@
     "file": null,
     "description": "The foundational argument is that woman has been defined historically as Other, as the negative term in relation to man. But the sections on love are where the book becomes personal. De Beauvoir describes what happens to a woman who makes love the center of her life, how that choice is conditioned, how it can become a kind of erasure. She is not against love. She is trying to describe what genuine love between equals might actually require, and how rarely the conditions for it exist.",
     "url": "https://newuniversityinexileconsortium.org/wp-content/uploads/2021/07/Simone-de-Beauvoir-The-Second-Sex-Jonathan-Cape-1956.pdf",
-    "caption": null,
-    "thumbnail": null
-  },
-  {
-    "id": 23,
-    "type": "text",
-    "title": "Entry Title",
-    "source": "Author or Origin",
-    "year": "2023",
-    "dateAdded": "2026-03-11",
-    "dateCreated": "2023-04-01",
-    "file": null,
-    "description": "Full text body or excerpt goes here. Can be long.",
-    "url": "https://optional-link.com",
-    "caption": null,
-    "thumbnail": null
-  },
-  {
-    "id": 24,
-    "type": "text",
-    "title": "Entry Title",
-    "source": "Author or Origin",
-    "year": "2023",
-    "dateAdded": "2026-03-11",
-    "dateCreated": "2023-04-01",
-    "file": null,
-    "description": "Full text body or excerpt goes here. Can be long.",
-    "url": "https://optional-link.com",
     "caption": null,
     "thumbnail": null
   },
