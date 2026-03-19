@@ -8,6 +8,9 @@ let allEntries = []
 /** @type {string} */
 let currentFilter = 'default'
 
+/** @type {boolean} */
+let expandedAllActive = false
+
 const FILTER_LABELS = {
   'default': 'Default',
   'title': 'Title',
@@ -131,6 +134,10 @@ function applySearch(entries, query) {
 }
 
 function applyFilterAndRender() {
+  if (expandedAllActive) {
+    renderExpandedAll()
+    return
+  }
   let list = applyFilter(allEntries, currentFilter)
   const searchInput = document.getElementById('search-input')
   const query = searchInput ? searchInput.value : ''
@@ -842,8 +849,8 @@ function openInfoOverlay() {
       <p class="info-overlay-text">0316*0713 is an archive for Nicole and myself. A birthday gift for Nicole's 21st birthday but also an archive that will grow and be edited through time and grow larger in size slowly.</p>
       <p class="info-overlay-text">Upload and delete function will come soon with a mobile compatible version.</p>
       <p class="info-overlay-text info-overlay-love">I love you and happy birthday Nicole.</p>
-    </div>
-  `
+  </div>
+`
 
   overlay.querySelector('.info-overlay-backdrop').addEventListener('click', closeInfoOverlay)
   overlay.querySelector('.info-overlay-content').addEventListener('click', (e) => e.stopPropagation())
@@ -857,14 +864,519 @@ function setupInfoButton() {
   if (btn) btn.addEventListener('click', openInfoOverlay)
 }
 
+function setupViewButtons() {
+  document.querySelectorAll('.sidebar-btn[data-view]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (expandedAllActive) closeExpandedAll()
+      document.querySelectorAll('.sidebar-btn[data-view]').forEach(b => b.classList.remove('active'))
+      btn.classList.add('active')
+    })
+  })
+}
+
+/* ===== Expanded-all view ===== */
+
+/** Build a single expanded-all card for one entry (no autoplay). */
+function buildExpandedAllCard(entry, index) {
+  const type = (entry.type || '').toLowerCase()
+  const rowNum = padRowNum(index)
+
+  const card = document.createElement('div')
+  card.className = 'expanded-all-card'
+  card.setAttribute('data-id', String(entry.id))
+
+  let contentHtml = ''
+
+  if (type === 'text') {
+    const desc = entry.description || ''
+    const url = entry.url || ''
+    contentHtml = `<div class="expand-cell--text expand-text-inner">
+      ${desc ? `<p class="expand-description">${escapeHtml(desc)}</p>` : ''}
+      ${url ? `<a href="${escapeHtml(url)}" class="expand-link" target="_blank" rel="noopener">${escapeHtml(url)}</a>` : ''}
+      ${!desc && !url ? '<p class="expand-description">No description or link.</p>' : ''}
+    </div>`
+  } else if (type === 'audio') {
+    const file = entry.file || ''
+    const thumb = entry.thumbnail || ''
+    const thumbHtml = thumb
+      ? `<img class="expand-audio-thumb" src="${escapeHtml(thumb)}" alt="" />`
+      : '<div class="expand-audio-thumb expand-audio-thumb--placeholder"></div>'
+    contentHtml = `<div class="expand-audio-inner">
+      <div class="expand-audio-thumb-wrap">${thumbHtml}</div>
+      <div class="expand-audio-player">
+        <audio class="expanded-all-audio" src="${escapeHtml(file)}" preload="metadata"></audio>
+        <div class="expand-audio-controls">
+          <button type="button" class="expand-audio-btn" data-action="back">${ICON_SKIP_BACK}</button>
+          <button type="button" class="expand-audio-btn expand-audio-btn--play" data-action="play">${ICON_PLAY}</button>
+          <button type="button" class="expand-audio-btn" data-action="forward">${ICON_SKIP_FORWARD}</button>
+        </div>
+        <div class="expand-audio-scrub-wrap">
+          <input type="range" class="expand-audio-scrub" min="0" max="100" value="0" />
+        </div>
+        <div class="expand-audio-time">
+          <span class="expand-audio-current">0:00</span>
+          <span class="expand-audio-total">0:00</span>
+        </div>
+      </div>
+    </div>`
+  } else if (type === 'video') {
+    const file = entry.file || ''
+    const caption = entry.caption || ''
+    contentHtml = `<div class="expand-video-wrap">
+      <div class="expand-video-frame expanded-all-video-frame">
+        <video class="expand-video-el expanded-all-video" src="${escapeHtml(file)}" preload="metadata"></video>
+        <div class="expand-video-controls">
+          <span class="expand-video-controls-edge" aria-hidden="true"></span>
+          <button type="button" class="expand-video-btn" data-action="back">${ICON_SKIP_BACK}</button>
+          <button type="button" class="expand-video-btn expand-video-btn--play" data-action="play">${ICON_PLAY}</button>
+          <button type="button" class="expand-video-btn" data-action="forward">${ICON_SKIP_FORWARD}</button>
+          <div class="expand-video-scrub-wrap">
+            <input type="range" class="expand-video-scrub" min="0" max="100" value="0" />
+          </div>
+          <span class="expand-video-current">0:00</span>
+          <span class="expand-video-total">0:00</span>
+          <span class="expand-video-controls-edge expand-video-controls-edge--right" aria-hidden="true"></span>
+        </div>
+      </div>
+      ${caption ? `<p class="expand-video-caption">${escapeHtml(caption)}</p>` : ''}
+    </div>`
+  } else if (type === 'photo') {
+    const files = Array.isArray(entry.files) && entry.files.length > 0
+      ? entry.files : (entry.file ? [entry.file] : [])
+    const caption = entry.caption || ''
+    const imgsHtml = files.map((src, i) =>
+      `<div class="expand-photo-img-wrap" data-photo-src="${escapeHtml(src)}"><img class="expand-photo-img" src="${escapeHtml(src)}" alt="${escapeHtml(entry.title || '')} ${i + 1}" /></div>`
+    ).join('')
+    contentHtml = `<div class="expand-photo-wrap">
+      <div class="expand-photo-inner">${imgsHtml}</div>
+      ${caption ? `<p class="expand-photo-caption">${escapeHtml(caption)}</p>` : ''}
+    </div>`
+  }
+
+  card.innerHTML = `
+    <div class="expanded-all-header">
+      <span class="expanded-all-num">${rowNum}</span>
+      <span class="expanded-all-title">${escapeHtml(entry.title || '')}</span>
+      <span class="expanded-all-source">${escapeHtml(entry.source || '')}</span>
+      <span class="expanded-all-year">${escapeHtml(entry.year ? String(entry.year) : '')}</span>
+      <span class="expanded-all-type">${escapeHtml(formatType(entry.type))}</span>
+    </div>
+    <div class="expanded-all-body">${contentHtml}</div>
+  `
+
+  return card
+}
+
+/** Wire up audio controls on a card (no autoplay). */
+function wireAudioCard(card) {
+  const audioEl = card.querySelector('.expanded-all-audio')
+  if (!audioEl) return
+  const scrub = card.querySelector('.expand-audio-scrub')
+  const currentSpan = card.querySelector('.expand-audio-current')
+  const totalSpan = card.querySelector('.expand-audio-total')
+  const playBtn = card.querySelector('.expand-audio-btn--play')
+
+  function fmt(s) {
+    return `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`
+  }
+  audioEl.addEventListener('loadedmetadata', () => { totalSpan.textContent = fmt(audioEl.duration) })
+  audioEl.addEventListener('timeupdate', () => {
+    currentSpan.textContent = fmt(audioEl.currentTime)
+    if (audioEl.duration) {
+      scrub.value = (100 * audioEl.currentTime) / audioEl.duration
+      scrub.style.setProperty('--scrub-value', scrub.value + '%')
+    }
+  })
+  audioEl.addEventListener('ended', () => {
+    playBtn.innerHTML = ICON_PLAY
+    scrub.value = 0
+    scrub.style.setProperty('--scrub-value', '0%')
+    currentSpan.textContent = '0:00'
+  })
+  scrub.addEventListener('input', () => {
+    if (!audioEl.duration) return
+    audioEl.currentTime = (scrub.value / 100) * audioEl.duration
+    scrub.style.setProperty('--scrub-value', scrub.value + '%')
+  })
+  card.querySelectorAll('.expand-audio-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation()
+      const action = btn.getAttribute('data-action')
+      if (action === 'play') {
+        if (audioEl.paused) { audioEl.play(); playBtn.innerHTML = ICON_PAUSE }
+        else { audioEl.pause(); playBtn.innerHTML = ICON_PLAY }
+      } else if (action === 'back') audioEl.currentTime = Math.max(0, audioEl.currentTime - 10)
+      else if (action === 'forward') audioEl.currentTime = Math.min(audioEl.duration || 0, audioEl.currentTime + 10)
+    })
+  })
+}
+
+/** Wire up video controls on a card (no autoplay). */
+function wireVideoCard(card) {
+  const videoEl = card.querySelector('.expanded-all-video')
+  if (!videoEl) return
+  videoEl.muted = false
+  const frame = card.querySelector('.expanded-all-video-frame')
+  const scrub = card.querySelector('.expand-video-scrub')
+  const currentSpan = card.querySelector('.expand-video-current')
+  const totalSpan = card.querySelector('.expand-video-total')
+  const playBtn = card.querySelector('.expand-video-btn--play')
+  const controlsEl = card.querySelector('.expand-video-controls')
+
+  function fmt(s) {
+    return `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`
+  }
+  videoEl.addEventListener('loadedmetadata', () => {
+    totalSpan.textContent = fmt(videoEl.duration)
+    const w = videoEl.videoWidth, h = videoEl.videoHeight
+    if (w && h && frame) {
+      const maxW = 640, maxH = 360
+      const scale = Math.min(maxW / w, maxH / h, 1)
+      frame.style.width = Math.round(w * scale) + 'px'
+      frame.style.height = Math.round(h * scale) + 'px'
+    }
+  })
+  videoEl.addEventListener('timeupdate', () => {
+    currentSpan.textContent = fmt(videoEl.currentTime)
+    if (videoEl.duration) {
+      scrub.value = (100 * videoEl.currentTime) / videoEl.duration
+      scrub.style.setProperty('--scrub-value', scrub.value + '%')
+    }
+  })
+  videoEl.addEventListener('ended', () => { playBtn.innerHTML = ICON_PLAY })
+  scrub.addEventListener('input', () => {
+    if (!videoEl.duration) return
+    videoEl.currentTime = (scrub.value / 100) * videoEl.duration
+    scrub.style.setProperty('--scrub-value', scrub.value + '%')
+  })
+  card.querySelectorAll('.expand-video-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation()
+      const action = btn.getAttribute('data-action')
+      if (action === 'play') {
+        if (videoEl.paused) { videoEl.play(); playBtn.innerHTML = ICON_PAUSE }
+        else { videoEl.pause(); playBtn.innerHTML = ICON_PLAY }
+      } else if (action === 'back') videoEl.currentTime = Math.max(0, videoEl.currentTime - 10)
+      else if (action === 'forward') videoEl.currentTime = Math.min(videoEl.duration || 0, videoEl.currentTime + 10)
+    })
+  })
+  let hideTimer = null
+  function scheduleHide() {
+    if (hideTimer) clearTimeout(hideTimer)
+    hideTimer = setTimeout(() => { controlsEl.classList.add('expand-video-controls--hidden'); hideTimer = null }, 1000)
+  }
+  function showControls() {
+    if (hideTimer) { clearTimeout(hideTimer); hideTimer = null }
+    controlsEl.classList.remove('expand-video-controls--hidden')
+  }
+  frame.addEventListener('mouseenter', showControls)
+  frame.addEventListener('mouseleave', scheduleHide)
+  scheduleHide()
+}
+
+/** Wire up photo click-to-zoom on a card. */
+function wirePhotoCard(card, entry) {
+  card.querySelectorAll('.expand-photo-img-wrap').forEach(wrap => {
+    wrap.addEventListener('click', () => {
+      const src = wrap.getAttribute('data-photo-src')
+      const archiveTable = document.querySelector('.archive-table')
+      const archiveRow = archiveTable && archiveTable.querySelector(`.archive-row[data-id="${entry.id}"]`)
+      if (!archiveRow) return
+      openPhotoLightbox(archiveRow, src)
+    })
+  })
+}
+
+function renderExpandedAll() {
+  const page = document.querySelector('.page')
+  const mainEl = document.querySelector('.main')
+  if (!page || !mainEl) return
+
+  mainEl.style.display = 'none'
+
+  const existingContainer = document.getElementById('expanded-all-container')
+  if (existingContainer) existingContainer.remove()
+
+  const container = document.createElement('div')
+  container.id = 'expanded-all-container'
+  container.className = 'expanded-all-container'
+
+  let list = applyFilter(allEntries, currentFilter)
+  const searchInput = document.getElementById('search-input')
+  if (searchInput && searchInput.value) list = applySearch(list, searchInput.value)
+
+  list.forEach((entry, index) => {
+    const card = buildExpandedAllCard(entry, index)
+    const type = (entry.type || '').toLowerCase()
+    if (type === 'audio') wireAudioCard(card)
+    if (type === 'video') wireVideoCard(card)
+    if (type === 'photo') wirePhotoCard(card, entry)
+    container.appendChild(card)
+  })
+
+  page.appendChild(container)
+}
+
+function closeExpandedAll() {
+  const container = document.getElementById('expanded-all-container')
+  if (container) container.remove()
+  const mainEl = document.querySelector('.main')
+  if (mainEl) mainEl.style.display = ''
+  expandedAllActive = false
+  document.querySelector('.sidebar-btn--expanded-all')?.classList.remove('active')
+}
+
+function setupExpandedAllButton() {
+  const btn = document.querySelector('.sidebar-btn--expanded-all')
+  if (!btn) return
+  btn.addEventListener('click', () => {
+    if (expandedAllActive) {
+      closeExpandedAll()
+    } else {
+      collapseAllExpanded()
+      document.querySelector('.sidebar-btn--list')?.classList.remove('active')
+      document.querySelector('.sidebar-btn--grid')?.classList.remove('active')
+      btn.classList.add('active')
+      expandedAllActive = true
+      renderExpandedAll()
+    }
+  })
+}
+
+/* ===== Upload ===== */
+const UPLOAD_PASSWORD = 'nyangmong2026'
+let uploadUnlocked = false
+
+function closeUploadModal() {
+  const el = document.getElementById('upload-modal')
+  if (el) el.remove()
+  document.removeEventListener('keydown', uploadEscHandler)
+}
+
+function uploadEscHandler(e) {
+  if (e.key === 'Escape') closeUploadModal()
+}
+
+function openUploadModal() {
+  if (document.getElementById('upload-modal')) { closeUploadModal(); return }
+
+  const modal = document.createElement('div')
+  modal.id = 'upload-modal'
+  modal.className = 'upload-modal'
+
+  if (!uploadUnlocked) {
+    modal.innerHTML = `
+      <div class="upload-modal-backdrop" aria-hidden="true"></div>
+      <div class="upload-modal-content upload-modal-password">
+        <h2 class="upload-modal-title">Enter Password</h2>
+        <input type="password" id="upload-password-input" class="upload-input" placeholder="Password" autocomplete="off" />
+        <div class="upload-modal-error" id="upload-password-error"></div>
+        <button type="button" class="upload-btn-primary" id="upload-password-submit">Unlock</button>
+      </div>
+    `
+    modal.querySelector('.upload-modal-backdrop').addEventListener('click', closeUploadModal)
+    modal.querySelector('.upload-modal-content').addEventListener('click', e => e.stopPropagation())
+    document.body.appendChild(modal)
+    document.addEventListener('keydown', uploadEscHandler)
+
+    const input = modal.querySelector('#upload-password-input')
+    const errEl = modal.querySelector('#upload-password-error')
+    const submitBtn = modal.querySelector('#upload-password-submit')
+
+    function tryUnlock() {
+      if (input.value === UPLOAD_PASSWORD) {
+        uploadUnlocked = true
+        closeUploadModal()
+        openUploadModal()
+      } else {
+        errEl.textContent = 'Incorrect password.'
+        input.value = ''
+        input.focus()
+      }
+    }
+    submitBtn.addEventListener('click', tryUnlock)
+    input.addEventListener('keydown', e => { if (e.key === 'Enter') tryUnlock() })
+    setTimeout(() => input.focus(), 50)
+    return
+  }
+
+  modal.innerHTML = `
+    <div class="upload-modal-backdrop" aria-hidden="true"></div>
+    <div class="upload-modal-content">
+      <h2 class="upload-modal-title">Upload Entry</h2>
+
+      <label class="upload-label">Type <span class="upload-required">*</span></label>
+      <select id="upload-type" class="upload-input upload-select">
+        <option value="">Select type</option>
+        <option value="text">Text</option>
+        <option value="audio">Audio</option>
+        <option value="video">Video</option>
+        <option value="photo">Photo</option>
+      </select>
+
+      <label class="upload-label">Title <span class="upload-required">*</span></label>
+      <input type="text" id="upload-title" class="upload-input" placeholder="Entry title" />
+
+      <label class="upload-label">Source <span class="upload-required">*</span></label>
+      <input type="text" id="upload-source" class="upload-input" placeholder="Author, artist, creator..." />
+
+      <label class="upload-label">Year</label>
+      <input type="text" id="upload-year" class="upload-input" placeholder="e.g. 2024" />
+
+      <label class="upload-label">Date Added</label>
+      <input type="date" id="upload-date-added" class="upload-input" />
+
+      <label class="upload-label">Date Created</label>
+      <input type="date" id="upload-date-created" class="upload-input" />
+
+      <label class="upload-label">Description / Caption</label>
+      <textarea id="upload-description" class="upload-input upload-textarea" placeholder="Description or caption..."></textarea>
+
+      <label class="upload-label">Link (Text entries)</label>
+      <input type="url" id="upload-url" class="upload-input" placeholder="https://..." />
+
+      <label class="upload-label" id="upload-file-label">File (MP4, MOV, MP3, JPG, PNG)</label>
+      <input type="file" id="upload-file" class="upload-input upload-file-input" accept="video/mp4,video/quicktime,audio/mpeg,image/jpeg,image/png,image/webp,image/avif" />
+
+      <div class="upload-modal-error" id="upload-error"></div>
+      <div class="upload-progress" id="upload-progress" style="display:none">
+        <div class="upload-progress-bar" id="upload-progress-bar"></div>
+        <span class="upload-progress-label" id="upload-progress-label">Uploading...</span>
+      </div>
+
+      <div class="upload-modal-actions">
+        <button type="button" class="upload-btn-secondary" id="upload-cancel">Cancel</button>
+        <button type="button" class="upload-btn-primary" id="upload-submit">Upload</button>
+      </div>
+    </div>
+  `
+
+  modal.querySelector('.upload-modal-backdrop').addEventListener('click', closeUploadModal)
+  modal.querySelector('.upload-modal-content').addEventListener('click', e => e.stopPropagation())
+  modal.querySelector('#upload-cancel').addEventListener('click', closeUploadModal)
+  document.body.appendChild(modal)
+  document.addEventListener('keydown', uploadEscHandler)
+
+  const typeSelect = modal.querySelector('#upload-type')
+  const fileInput = modal.querySelector('#upload-file')
+  const fileLabel = modal.querySelector('#upload-file-label')
+
+  typeSelect.addEventListener('change', () => {
+    const t = typeSelect.value
+    if (t === 'text') {
+      fileLabel.textContent = 'File (optional)'
+      fileInput.accept = '*/*'
+    } else if (t === 'video') {
+      fileLabel.textContent = 'Video file (MP4, MOV) *'
+      fileInput.accept = 'video/mp4,video/quicktime,.mp4,.mov'
+    } else if (t === 'audio') {
+      fileLabel.textContent = 'Audio file (MP3) *'
+      fileInput.accept = 'audio/mpeg,.mp3'
+    } else if (t === 'photo') {
+      fileLabel.textContent = 'Image file (JPG, PNG, WEBP) *'
+      fileInput.accept = 'image/jpeg,image/png,image/webp,image/avif,.jpg,.jpeg,.png,.webp,.avif'
+    }
+  })
+
+  modal.querySelector('#upload-submit').addEventListener('click', () => handleUploadSubmit(modal))
+}
+
+async function handleUploadSubmit(modal) {
+  const errEl = modal.querySelector('#upload-error')
+  const progressWrap = modal.querySelector('#upload-progress')
+  const progressBar = modal.querySelector('#upload-progress-bar')
+  const progressLabel = modal.querySelector('#upload-progress-label')
+  const submitBtn = modal.querySelector('#upload-submit')
+  errEl.textContent = ''
+
+  const type = modal.querySelector('#upload-type').value.trim()
+  const title = modal.querySelector('#upload-title').value.trim()
+  const source = modal.querySelector('#upload-source').value.trim()
+  const year = modal.querySelector('#upload-year').value.trim()
+  const dateAdded = modal.querySelector('#upload-date-added').value.trim()
+  const dateCreated = modal.querySelector('#upload-date-created').value.trim()
+  const description = modal.querySelector('#upload-description').value.trim()
+  const url = modal.querySelector('#upload-url').value.trim()
+  const fileInput = modal.querySelector('#upload-file')
+  const file = fileInput.files[0] || null
+
+  if (!type) { errEl.textContent = 'Please select a type.'; return }
+  if (!title) { errEl.textContent = 'Title is required.'; return }
+  if (!source) { errEl.textContent = 'Source is required.'; return }
+  if (type !== 'text' && !file) { errEl.textContent = 'Please select a file to upload.'; return }
+
+  submitBtn.disabled = true
+  progressWrap.style.display = 'flex'
+  progressLabel.textContent = file ? 'Reading file...' : 'Submitting...'
+  progressBar.style.width = '10%'
+
+  try {
+    let base64Content = null
+    let fileName = null
+
+    if (file) {
+      base64Content = await fileToBase64(file)
+      progressBar.style.width = '40%'
+      progressLabel.textContent = 'Uploading file to GitHub...'
+      fileName = file.name
+    }
+
+    progressBar.style.width = '60%'
+    progressLabel.textContent = 'Updating archive...'
+
+    const res = await fetch('/api/upload', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type, title, source, year, dateAdded, dateCreated, description, url, fileName, fileContent: base64Content })
+    })
+
+    const json = await res.json()
+    if (!res.ok) throw new Error(json.error || 'Upload failed')
+
+    progressBar.style.width = '100%'
+    progressLabel.textContent = 'Done! Deploying...'
+    progressLabel.style.color = 'var(--cyan)'
+
+    setTimeout(() => {
+      closeUploadModal()
+      alert('Upload successful. The archive will update after Vercel redeploys (usually 30-60 seconds).')
+    }, 800)
+  } catch (err) {
+    errEl.textContent = err.message || 'Upload failed. Try again.'
+    submitBtn.disabled = false
+    progressWrap.style.display = 'none'
+    progressBar.style.width = '0%'
+  }
+}
+
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = () => resolve(reader.result.split(',')[1])
+    reader.onerror = reject
+    reader.readAsDataURL(file)
+  })
+}
+
+function setupUploadButton() {
+  const btn = document.querySelector('.sidebar-btn--upload')
+  if (btn) btn.addEventListener('click', openUploadModal)
+}
+
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', () => {
     loadAndRender()
     startLiveClock()
     setupInfoButton()
+    setupExpandedAllButton()
+    setupUploadButton()
+    setupViewButtons()
   })
 } else {
   loadAndRender()
   startLiveClock()
   setupInfoButton()
+  setupExpandedAllButton()
+  setupUploadButton()
+  setupViewButtons()
 }
